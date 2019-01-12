@@ -14,6 +14,7 @@ try:
             acc = sense.get_accelerometer_raw()
 
             gyro = sense.get_gyroscope()
+            print(gyro)
             accx = round(acc["x"], 4)
             accy = round(acc["y"], 4)
             accz = round(acc["z"], 4)
