@@ -12,6 +12,8 @@ try:
         csv_writer.writerow(header)
         while True:
             acc = sense.get_accelerometer_raw()
+
+            gyro = sense.get_gyroscope()
             accx = round(acc["x"], 4)
             accy = round(acc["y"], 4)
             accz = round(acc["z"], 4)
