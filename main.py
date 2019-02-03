@@ -22,16 +22,17 @@ sense = SenseHat()
 
 camera = PiCamera()
 
-experiment_time = timedelta(seconds=5)
+experiment_time = timedelta(seconds=30)
 
+start = datetime.now().strftime("%H:%M:%S")
 dir_path = os.path.dirname(os.path.realpath(__file__))
-csv_data_path = dir_path + "/data.csv"
-
+csv_data_path = dir_path + "/data_{}.csv".format(start)
+logfile_path = dir_path + "/log_{}.log".format(start)
 # Próg od którego uznajemy, że stacja zaczęła przyspieszać
 threshold = 0.05
 
 # Czas pomiędzy zapisami pomiarów
-pause_time = 0.1
+pause_time = 0
 
 # zapis momentu uruchomienia skryptu
 start_time = datetime.utcnow()
@@ -40,7 +41,7 @@ start_time = datetime.utcnow()
 def get_iss_location():
     iss_geo.compute()
     return {"lat": iss_geo.sublat, "lon": iss_geo.sublong}
-
+    #return {"lat": 1, "lon": 2}
 
 def get_time_str():
     return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
@@ -97,18 +98,18 @@ def get_all_measurements():
 
 
 def display_reboost_started():
+    sense.show_message("Reboost has already started")
     # TODO: wyświetl na ekranie LED, że przyspieszenie się rozpoczęło
-    pass
 
 
 def display_waiting_for_reboost():
+    sense.show_message("Waiting for reboost")
     # TODO: wyświetl na ekranie LED, że czekamy na reboost
-    pass
 
 
 def dispay_reboost_finished():
+    sense.show_message("Reboost finished")
     # TODO: wyświetl na ekranie LED, że reboost się skończył
-    pass
 
 
 def before_experiment_start():
@@ -149,12 +150,13 @@ def check_if_accelerating():
 
 def is_experiment_ongoing():
     # Sprawdzenie, czy od początku eksperymentu nie minął już zadany czas (z małym marginesem)
-    return datetime.now() < start_time + experiment_time
+    return datetime.utcnow() < start_time + experiment_time
 
 
 def configure_logging():
+    
     # Konfiguracja logowania do pliku
-    logzero.logfile(dir_path + "/logfile.log")
+    logzero.logfile(logfile_path)
     logger.name = "AstroPi"
     # Każda linijka będzie w formacie name, czas, poziom wiadomości (DEBUG, INFO, ERROR), treść wiadomości
     # standardowo "poziom" wiadomości loga określa jej "wagę" i wiąże się z tym jakiej metody loggera używamy
@@ -166,7 +168,7 @@ def configure_logging():
 
 def take_photo_of_earth():
     camera.capture(dir_path + "/{}.jpg".format(get_time_str()))
-
+    #logger.info("photo taken")
 
 configure_logging()
 
